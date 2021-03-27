@@ -10,10 +10,11 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  double valorPrimeiro = 0.0;
-  double valorSegundo = 0.0;
-  double valorTotal = 0.0;
-  String operacao;
+  String valorPrimeiro = '';
+  String valorSegundo = '';
+  String valorTotal = '';
+  String operacao = '';
+  String textoValores = '0';
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class MyAppState extends State<MyApp> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    valorTotal.toString(),
+                    textoValores.toString(),
                     style: TextStyle(fontSize: 50, color: Colors.black),
                   ),
                 ],
@@ -42,26 +43,10 @@ class MyAppState extends State<MyApp> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  botaoNumerico(7),
-                  botaoNumerico(8),
-                  botaoNumerico(9),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: EdgeInsets.all(1.0),
-                      child: FlatButton(
-                        onPressed: () {
-                          operacaoPressionada('/');
-                        },
-                        color: Colors.blue[900],
-                        child: Text(
-                          '/',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                        textColor: Colors.blue[200],
-                      ),
-                    ),
-                  ),
+                  botaoNumerico('7'),
+                  botaoNumerico('8'),
+                  botaoNumerico('9'),
+                  botaoOperacao('/'),
                 ],
               ),
             ),
@@ -69,26 +54,10 @@ class MyAppState extends State<MyApp> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  botaoNumerico(4),
-                  botaoNumerico(5),
-                  botaoNumerico(6),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: EdgeInsets.all(1.0),
-                      child: FlatButton(
-                        onPressed: () {
-                          operacaoPressionada('X');
-                        },
-                        color: Colors.blue[900],
-                        child: Text(
-                          'X',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                        textColor: Colors.blue[200],
-                      ),
-                    ),
-                  ),
+                  botaoNumerico('4'),
+                  botaoNumerico('5'),
+                  botaoNumerico('6'),
+                  botaoOperacao('X'),
                 ],
               ),
             ),
@@ -96,26 +65,10 @@ class MyAppState extends State<MyApp> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  botaoNumerico(1),
-                  botaoNumerico(2),
-                  botaoNumerico(3),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: EdgeInsets.all(1.0),
-                      child: FlatButton(
-                        onPressed: () {
-                          operacaoPressionada('-');
-                        },
-                        color: Colors.blue[900],
-                        child: Text(
-                          '-',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                        textColor: Colors.blue[200],
-                      ),
-                    ),
-                  ),
+                  botaoNumerico('1'),
+                  botaoNumerico('2'),
+                  botaoNumerico('3'),
+                  botaoOperacao('-'),
                 ],
               ),
             ),
@@ -123,24 +76,8 @@ class MyAppState extends State<MyApp> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  botaoNumerico(0),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: EdgeInsets.all(1.0),
-                      child: FlatButton(
-                        onPressed: () {
-                          operacaoPressionada('+');
-                        },
-                        color: Colors.blue[900],
-                        child: Text(
-                          '+',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                        textColor: Colors.blue[200],
-                      ),
-                    ),
-                  ),
+                  botaoNumerico('0'),
+                  botaoOperacao('+')
                 ],
               ),
             ),
@@ -191,58 +128,74 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  void numeroPressionado(double valorPressionado) {
-    if (valorPrimeiro == 0.0) {
-      valorPrimeiro = valorPressionado;
-    } else {
-      valorSegundo = valorPressionado;
-    }
+  void numeroPressionado(String valorPressionado) {
+    setState(() {
+      if (operacao == '') {
+        if (valorPrimeiro == '0') {
+          valorPrimeiro = '';
+        }
+        valorPrimeiro = valorPrimeiro + valorPressionado;
+        valorTotal = valorPrimeiro;
+      } else {
+        valorSegundo = valorSegundo + valorPressionado;
+      }
+
+      textoValores = valorPrimeiro + operacao + valorSegundo;
+    });
   }
 
   void operacaoPressionada(String operacaoPressionada) {
-    operacao = operacaoPressionada;
+    setState(() {
+      if (valorPrimeiro != '0') {
+        operacao = operacaoPressionada;
+      }
+
+      textoValores = valorPrimeiro + operacao + valorSegundo;
+    });
   }
 
   void calcular() {
     setState(() {
-      if (valorPrimeiro != 0.0 && valorSegundo != 0.0 && operacao != null) {
+      if (valorPrimeiro != '0' && valorSegundo != '0' && operacao != null) {
         if (operacao == '+') {
-          valorTotal = valorPrimeiro + valorSegundo;
+          valorTotal = (int.parse(valorPrimeiro) + int.parse(valorSegundo)).toString();
         }
         if (operacao == '-') {
-          valorTotal = valorPrimeiro - valorSegundo;
+          valorTotal = (int.parse(valorPrimeiro) - int.parse(valorSegundo)).toString();
         }
         if (operacao == 'X') {
-          valorTotal = valorPrimeiro * valorSegundo;
+          valorTotal = (int.parse(valorPrimeiro) * int.parse(valorSegundo)).toString();
         }
         if (operacao == '/') {
-          valorTotal = valorPrimeiro / valorSegundo;
+          valorTotal = (int.parse(valorPrimeiro) / int.parse(valorSegundo)).toString();
         }
+        textoValores = valorTotal;
       }
     });
   }
 
   void limparValores() {
     setState(() {
-      valorPrimeiro = 0.0;
-      valorSegundo = 0.0;
-      operacao = null;
-      valorTotal = 0.0;
+      valorPrimeiro = '0';
+      valorSegundo = '';
+      operacao = '';
+      valorTotal = '0';
+      textoValores = '0';
     });
   }
 
-  Expanded botaoNumerico(double valor) {
+  Expanded botaoNumerico(String valorBotao) {
     return Expanded(
       flex: 1,
       child: Padding(
         padding: EdgeInsets.all(1.0),
         child: FlatButton(
           onPressed: () {
-            numeroPressionado(valor);
+            numeroPressionado(valorBotao);
           },
           color: Colors.blue[200],
           child: Text(
-            convertToInt(valor),
+            valorBotao,
             style: TextStyle(
               fontSize: 40,
             ),
@@ -273,10 +226,5 @@ class MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-
-  String convertToInt(double numeroDouble) {
-    int numeroInteiro = numeroDouble.round();
-    return numeroInteiro.toString();
   }
 }
